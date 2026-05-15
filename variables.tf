@@ -87,4 +87,11 @@ variable "vm_size" {
   description = "Taille de la machine virtuelle"
   type        = string
 }
-
+variable "nsg_rules" {
+  default = {
+    SSH        = 22
+    HTTP       = 80
+    Docker-TCP = 2375
+    HTTP-8080  = 8080
+  }
+}

@@ -18,6 +18,7 @@ module "create_vm" {
   user_name             = var.user_name
   ssh_public_key        = var.ssh_public_key
   ssh_private_key       = var.ssh_private_key
+  nsg_rules             = var.nsg_rules
 }
 
 module "install_docker" {

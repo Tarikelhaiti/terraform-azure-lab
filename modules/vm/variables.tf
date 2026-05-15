@@ -87,3 +87,5 @@ variable "vm_size" {
   description = "Taille de la machine virtuelle"
   type        = string
 }
+
+variable "nsg_rules" {}

@@ -43,51 +43,21 @@ resource "azurerm_network_security_group" "nsg" {
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
-  security_rule {
-    name                       = "SSH"
-    priority                   = 1001
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    destination_port_range     = "22"
-    source_port_range          = "*"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
-  security_rule {
-    name                       = "HTTP"
-    priority                   = 1002
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    destination_port_range     = "80"
-    source_port_range          = "*"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
-  security_rule {
-    name                       = "Docker-TCP"
-    priority                   = 1003
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    destination_port_range     = "2375"
-    source_port_range          = "*"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
-  security_rule {
-    name                       = "HTTP-8080"
-    priority                   = 1004
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    destination_port_range     = "8080"
-    source_port_range          = "*"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
+  dynamic "security_rule" {
+    for_each = var.nsg_rules
 
+    content {
+      name                       = security_rule.key
+      priority                   = 1001 + index(sort(keys(var.nsg_rules)), security_rule.key)
+      direction                  = "Inbound"
+      access                     = "Allow"
+      protocol                   = "Tcp"
+      destination_port_range     = tostring(security_rule.value)
+      source_port_range          = "*"
+      source_address_prefix      = "*"
+      destination_address_prefix = "*"
+    }
+  }
 }
 
 resource "azurerm_network_interface_security_group_association" "assoc" {
